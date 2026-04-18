@@ -15,14 +15,21 @@ def health():
 @app.post("/predict", response_model=PredictResponse)
 def predict(payload: PredictRequest):
     try:
-        predicted_direction, confidence, probabilities = predictor.predict(payload.rawScores)
+        result = predictor.predict_full(payload.rawScores)
+
         return PredictResponse(
-            predictedDirection=predicted_direction,
-            confidence=confidence,
-            probabilities=probabilities,
-            modelVersion="v1-logreg"
+            predictedDirection=result["predictedDirection"],
+            confidence=result["confidence"],
+            matchPercent=result["matchPercent"],
+            probabilities=result["probabilities"],
+            topPredictions=result["topPredictions"],
+            modelVersion="v2-ml"
         )
+
     except FileNotFoundError as e:
         raise HTTPException(status_code=500, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Prediction error: {str(e)}"
+        )

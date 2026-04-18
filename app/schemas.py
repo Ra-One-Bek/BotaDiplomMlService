@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 
 class PredictRequest(BaseModel):
@@ -7,8 +7,16 @@ class PredictRequest(BaseModel):
     topDirectionFromRules: Optional[str] = None
 
 
+class TopPrediction(BaseModel):
+    direction: str
+    confidence: float
+    matchPercent: int
+
+
 class PredictResponse(BaseModel):
     predictedDirection: str
-    confidence: float
-    probabilities: Dict[str, float]
-    modelVersion: str
+    confidence: float = 0.0
+    matchPercent: int = 0
+    probabilities: Dict[str, float] = {}
+    topPredictions: List[TopPrediction] = []
+    modelVersion: str = "unknown"
